@@ -5,8 +5,8 @@
 ### 使用
 
 ```cmd
-git clone https://github.com/alexjoverm/typescript-library-starter.git YOURFOLDERNAME
-cd YOURFOLDERNAME
+git clone https://github.com/alexjoverm/typescript-library-starter.git YOUR_FOLDER_NAME
+cd YOUR_FOLDER_NAME
 npm install
 ```
 
