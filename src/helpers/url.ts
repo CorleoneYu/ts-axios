@@ -1,8 +1,15 @@
 /**
  * 处理 url 参数拼接相关
+ * 1. 数组
+ * 2. 对象
+ * 3. 日期
+ * 4. 特殊字符
+ * 5. 空值忽略
+ * 6. url 中 hash 舍弃
+ * 7. url 中原参数保留
  */
 
-import { isDate, isObject } from './util'
+import { isDate, isPlainObject } from './util'
 
 // 对于字符 @、:、$、,、、[、]
 // 允许出现在 url 中的，不希望被 encode
@@ -47,7 +54,7 @@ export function buildURL(url: string, params?: any) {
     values.forEach(val => {
       if (isDate(val)) {
         val = val.toISOString()
-      } else if (isObject(val)) {
+      } else if (isPlainObject(val)) {
         val = JSON.stringify(val)
       }
       parts.push(`${encode(key)}=${encode(val)}`)

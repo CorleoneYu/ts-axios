@@ -1,6 +1,6 @@
 import axios from '../../src/index'
 
-// 1. 数组
+// 1.1 数组
 axios({
   method: 'get',
   url: '/base/get',
@@ -9,7 +9,7 @@ axios({
   }
 })
 
-// 2. 对象
+// 1.2 对象
 axios({
   method: 'get',
   url: '/base/get',
@@ -20,7 +20,7 @@ axios({
   }
 })
 
-// 3. 日期
+// 1.3 日期
 const date = new Date()
 axios({
   method: 'get',
@@ -30,7 +30,7 @@ axios({
   }
 })
 
-// 4. 特殊字符
+// 1.4 特殊字符
 axios({
   method: 'get',
   url: '/base/get',
@@ -39,7 +39,7 @@ axios({
   }
 })
 
-// 5. 空值忽略
+// 1.5 空值忽略
 axios({
   method: 'get',
   url: '/base/get',
@@ -49,7 +49,7 @@ axios({
   }
 })
 
-// 6. hash 舍弃
+// 1.6 hash 舍弃
 axios({
   method: 'get',
   url: '/base/get#hash',
@@ -58,11 +58,29 @@ axios({
   }
 })
 
-// 7. 原参数保留
+// 1.7 原参数保留
 axios({
   method: 'get',
   url: '/base/get?foo=bar',
   params: {
     bar: 'baz'
   }
+})
+
+// 2.1 普通对象
+axios({
+  method: 'post',
+  url: '/base/post',
+  data: {
+    a: 1,
+    b: 2
+  }
+})
+
+// 2.2 Int32Array 类型数据
+const arr = new Int32Array([21, 31])
+axios({
+  method: 'post',
+  url: '/base/buffer',
+  data: arr
 })
