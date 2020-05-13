@@ -6,7 +6,7 @@ import xhr from './xhr'
 
 function axios(config: AxiosRequestConfig) {
   processConfig(config)
-  xhr(config)
+  return xhr(config)
 }
 
 function processConfig(config: AxiosRequestConfig): void {
