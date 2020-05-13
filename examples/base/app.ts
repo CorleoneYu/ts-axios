@@ -84,3 +84,26 @@ axios({
   url: '/base/buffer',
   data: arr
 })
+
+// 3.1 content-type => json
+axios({
+  method: 'post',
+  url: '/base/post',
+  headers: {
+    'content-type': 'application/json'
+  },
+  data: {
+    a: 1,
+    b: 2
+  }
+})
+
+// 3.2 浏览器自动添加合适的 content-type
+const paramsString = 'q=URLUtils.searchParams&topic=api'
+const searchParams = new URLSearchParams(paramsString)
+
+axios({
+  method: 'post',
+  url: '/base/post',
+  data: searchParams
+})
