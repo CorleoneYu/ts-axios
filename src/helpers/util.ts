@@ -16,3 +16,25 @@ export function isDate(val: any): val is Date {
 export function isPlainObject(val: any): val is Object {
   return toString.call(val) === '[object Object]'
 }
+
+/**
+ * 混合对象的实现
+ * 需要一种值，具有
+ * 1. 首先他是个函数
+ * 2. 他又有某种类的所有原型属性和实例属性
+ * 场景： Axios
+ * 1. 可以当作函数调用 Axios({
+ *  // ..config
+ * })
+ * 2. 可以使用 Axios 的方法
+ * Axios.get({
+ *  // ..config
+ * })
+ */
+export function extend<T, U>(to: T, from: U): T & U {
+  // 将 from 的属性、方法 拓展到 to 中
+  for (const key in from) {
+    ;(to as T & U)[key] = from[key] as any
+  }
+  return to as T & U
+}
