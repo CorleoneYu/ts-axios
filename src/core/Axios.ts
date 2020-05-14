@@ -28,7 +28,33 @@ export default class Axios {
     )
   }
 
-  request(config: AxiosRequestConfig): AxiosPromise {
+  /**
+   * 这样封装是为了做重载
+   * @param url 当类型为字符串时 则表示请求路径。也可以为 config
+   * @param config
+   * 1. 只传入一个参数时 即 url 为 config
+   * request({
+   *  url: '/xxx',
+   *  method: 'get',
+   * })
+   * 2. 传入两个参数时
+   * request('/xxx', {
+   *  method: 'post',
+   *  data: {
+   *    msg: 'lky'
+   *  }
+   * })
+   */
+  request(url: any, config?: any): AxiosPromise {
+    if (typeof url === 'string') {
+      if (!config) {
+        config = {}
+      }
+      config.url = url
+    } else {
+      config = url
+    }
+
     return dispatchRequest(config)
   }
 

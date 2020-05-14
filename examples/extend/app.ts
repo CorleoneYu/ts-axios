@@ -1,5 +1,6 @@
 import axios from '../../src/index'
 
+// 作为函数调用 实际上调用到了 Axios.request
 axios({
   url: '/extend/post',
   method: 'post',
@@ -8,6 +9,15 @@ axios({
   }
 })
 
+// 函数重载调用
+axios('/extend/post', {
+  method: 'post',
+  data: {
+    msg: 'hi'
+  }
+})
+
+// 作为 Axios 实例调用 
 axios.request({
   url: '/extend/post',
   method: 'post',
