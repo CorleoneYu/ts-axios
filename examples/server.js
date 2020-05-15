@@ -77,6 +77,14 @@ router.get('/error/timeout', function(req, res) {
   }, 3000);
 })
 
+// 泛型
+router.get('/extends/user', function(req, res) {
+  res.json({
+    name: 'lky',
+    age: 16
+  })
+})
+
 app.use(router)
 
 const port = process.env.PORT || 8080

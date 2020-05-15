@@ -39,3 +39,28 @@ axios.post('/extend/post', { msg: 'post' })
 axios.put('/extend/put', { msg: 'put' })
 
 axios.patch('/extend/patch', { msg: 'patch' })
+
+// 泛型
+interface ResponseData<T = any> {
+  code: number
+  result: T
+  message: string
+}
+
+interface User {
+  name: string,
+  age: number
+}
+
+function getUser<T>() {
+  return axios<ResponseData<T>>('/extends/user')
+  .then(res => res.data)
+  .catch(err => console.log(err))
+}
+
+async function test() {
+  const user = await getUser<User>()
+  console.log('user', user);
+}
+
+test();
