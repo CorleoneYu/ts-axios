@@ -1,7 +1,31 @@
-import { AxiosRequestConfig, AxiosPromise, Method } from '../type'
+import {
+  AxiosRequestConfig,
+  AxiosPromise,
+  Method,
+  AxiosResponse,
+  ResolvedFn,
+  RejectedFn
+} from '../type'
 import dispatchRequest from './dispatchRequest'
+import InterceptorManager from './InterceptorManager'
+
+interface Interceptors {
+  request: InterceptorManager<AxiosRequestConfig>
+  response: InterceptorManager<AxiosResponse>
+}
+
+interface PromiseChain {
+  resolved: ResolvedFn | ((config: AxiosRequestConfig) => AxiosPromise)
+  rejected?: RejectedFn
+}
 
 export default class Axios {
+  // 拦截器
+  interceptors: Interceptors = {
+    request: new InterceptorManager<AxiosRequestConfig>(),
+    response: new InterceptorManager<AxiosResponse>()
+  }
+
   // get, delete, head, options 不需要带数据在 data 里
   private requestMethodWithoutData(method: Method, url: string, config?: AxiosRequestConfig) {
     return this.request(
@@ -55,7 +79,27 @@ export default class Axios {
       config = url
     }
 
-    return dispatchRequest(config)
+    const chain: PromiseChain[] = []
+    chain.push({
+      resolved: dispatchRequest
+    })
+
+    this.interceptors.request.forEach(interceptor => {
+      chain.unshift(interceptor)
+    })
+
+    this.interceptors.response.forEach(interceptor => {
+      chain.push(interceptor)
+    })
+
+    let promise = Promise.resolve(config)
+
+    while (chain.length) {
+      const { resolved, rejected } = chain.shift()!
+      promise = promise.then(resolved, rejected)
+    }
+
+    return promise
   }
 
   get(url: string, config?: AxiosRequestConfig): AxiosPromise {

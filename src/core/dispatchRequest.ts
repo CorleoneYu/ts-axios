@@ -25,7 +25,7 @@ function processConfig(config: AxiosRequestConfig): void {
 
 // 格式化 request url 参数相关带
 function transformUrl(config: AxiosRequestConfig): string {
-  const { url, params } = config
+  const { url = '', params } = config
   return buildURL(url, params)
 }
 
