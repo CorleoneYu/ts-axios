@@ -38,3 +38,32 @@ export function extend<T, U>(to: T, from: U): T & U {
   }
   return to as T & U
 }
+
+/**
+ * deep 合并对象
+ * @param objs 需要合并的对象
+ */
+export function deepMerge(...objs: any[]): any {
+  const res = Object.create(null)
+
+  objs.forEach(obj => {
+    if (obj) {
+      Object.keys(obj).forEach(key => {
+        const val = obj[key]
+
+        if (isPlainObject(val)) {
+          if (isPlainObject(res[key])) {
+            // 递归调用
+            res[key] = deepMerge(res[key], val)
+          } else {
+            res[key] = deepMerge({}, val)
+          }
+        } else {
+          res[key] = val
+        }
+      })
+    }
+  })
+
+  return res
+}

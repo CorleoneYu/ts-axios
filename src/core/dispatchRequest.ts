@@ -1,7 +1,7 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from '../type'
 import { buildURL } from '../helpers/url'
 import { transformRequest, transformResponse } from '../helpers/data'
-import { processHeaders } from '../helpers/header'
+import { processHeaders, flattenHeaders } from '../helpers/header'
 import xhr from './xhr'
 
 export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
@@ -21,6 +21,9 @@ function processConfig(config: AxiosRequestConfig): void {
 
   // 3. data 处理
   config.data = transformRequestData(config)
+
+  // 4. 将 headers 中的字段扁平化
+  config.headers = flattenHeaders(config.headers, config.method!)
 }
 
 // 格式化 request url 参数相关带

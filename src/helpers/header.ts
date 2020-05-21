@@ -1,4 +1,5 @@
-import { isPlainObject } from './util'
+import { isPlainObject, deepMerge } from './util'
+import { Method } from '../type'
 
 /**
  * request
@@ -64,4 +65,46 @@ export function parseHeaders(headers: string): any {
   })
 
   return parsed
+}
+
+/**
+ * 需要将 headers 中的字段进行扁平化处理 如下
+ */
+// headers: {
+//   common: {
+//     Accept: 'application/json, text/plain, */*'
+//   },
+//   post: {
+//     'Content-Type':'application/x-www-form-urlencoded'
+//   }
+// }
+// 处理成
+// headers: {
+//   Accept: 'application/json, text/plain, */*',
+//  'Content-Type':'application/x-www-form-urlencoded'
+// }
+// 其中  common 需要公用，但 post get 等需要和特定请求方式对应
+export function flattenHeaders(headers: any, method: Method): any {
+  if (!headers) {
+    return headers
+  }
+
+  headers = deepMerge(headers.common || {}, headers[method] || {}, headers)
+
+  const methodsToDelete: string[] = [
+    'delete',
+    'get',
+    'head',
+    'options',
+    'post',
+    'put',
+    'patch',
+    'common'
+  ]
+
+  methodsToDelete.forEach(method => {
+    delete headers[method]
+  })
+
+  return headers
 }

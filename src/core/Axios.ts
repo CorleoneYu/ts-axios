@@ -8,6 +8,7 @@ import {
 } from '../type'
 import dispatchRequest from './dispatchRequest'
 import InterceptorManager from './InterceptorManager'
+import mergeConfig from './mergeConfig'
 
 interface Interceptors {
   request: InterceptorManager<AxiosRequestConfig>
@@ -24,6 +25,12 @@ export default class Axios {
   interceptors: Interceptors = {
     request: new InterceptorManager<AxiosRequestConfig>(),
     response: new InterceptorManager<AxiosResponse>()
+  }
+  // 默认配置
+  defaults: AxiosRequestConfig
+
+  constructor(initConfig: AxiosRequestConfig) {
+    this.defaults = initConfig
   }
 
   // get, delete, head, options 不需要带数据在 data 里
@@ -79,21 +86,28 @@ export default class Axios {
       config = url
     }
 
+    config = mergeConfig(this.defaults, config)
+
+    // 处理函数链
     const chain: PromiseChain[] = []
+    // 中间节点为 dispatchRequest
     chain.push({
       resolved: dispatchRequest
     })
 
+    // dispatchRequest 前为 request 拦截器
     this.interceptors.request.forEach(interceptor => {
       chain.unshift(interceptor)
     })
 
+    // dispatchRequest 后为 response 拦截器
     this.interceptors.response.forEach(interceptor => {
       chain.push(interceptor)
     })
 
     let promise = Promise.resolve(config)
 
+    // 消费函数链
     while (chain.length) {
       const { resolved, rejected } = chain.shift()!
       promise = promise.then(resolved, rejected)
