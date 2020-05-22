@@ -91,6 +91,13 @@ router.get('/interceptor/get', function(req, res) {
     data: 'lky',
   })
 })
+
+// config
+router.post('/config/post', function(req, res) {
+  res.json({
+    data: 'lky'
+  })
+})
 app.use(router)
 
 const port = process.env.PORT || 8080
