@@ -1,7 +1,9 @@
-import { AxiosInstance, AxiosRequestConfig } from './type'
+import { AxiosRequestConfig, AxiosStatic } from './type'
 import Axios from './core/Axios'
 import { extend } from './helpers/util'
 import defaults from './defaults'
+import CancelToken from './cancel/CancelToken'
+import Cancel, { isCancel } from './cancel/Cancel'
 
 /**
  * 混合对象的实现
@@ -16,15 +18,19 @@ import defaults from './defaults'
  * })
  * 很骚的做法
  */
-function createInstance(config: AxiosRequestConfig): AxiosInstance {
+function createInstance(config: AxiosRequestConfig): AxiosStatic {
   const context = new Axios(config)
   const instance = Axios.prototype.request.bind(context)
 
   extend(instance, context)
 
-  return instance as AxiosInstance
+  return instance as AxiosStatic
 }
 
 const axios = createInstance(defaults)
+
+axios.Cancel = Cancel
+axios.CancelToken = CancelToken
+axios.isCancel = isCancel
 
 export default axios
