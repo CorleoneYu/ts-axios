@@ -4,13 +4,14 @@ import { extend } from './helpers/util'
 import defaults from './defaults'
 import CancelToken from './cancel/CancelToken'
 import Cancel, { isCancel } from './cancel/Cancel'
+import mergeConfig from './core/mergeConfig'
 
 /**
  * 混合对象的实现
  * instance
  * 1. 可以作为方法调用 实际上是调用到 Axios.request
  * Axios({
- * instance// ..config
+ *  instance// ..config
  * })
  * 2. 可以使用 Axios 的方法, 因为 extend 将 Axios 的属性、方法挂上去了
  * instance.get({
@@ -28,6 +29,10 @@ function createInstance(config: AxiosRequestConfig): AxiosStatic {
 }
 
 const axios = createInstance(defaults)
+
+axios.create = function create(config) {
+  return createInstance(mergeConfig(defaults, config))
+}
 
 axios.Cancel = Cancel
 axios.CancelToken = CancelToken

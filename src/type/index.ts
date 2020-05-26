@@ -80,10 +80,21 @@ export interface Axios {
   defaults: AxiosRequestConfig
 }
 
+// 混合类型 可以使用 Axios 实例属性 又可以作为函数
 export interface AxiosInstance extends Axios {
   <T = any>(config: AxiosRequestConfig): AxiosPromise<T>
 
+  // 函数重载
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+}
+
+// 静态属性
+export interface AxiosStatic extends AxiosInstance {
+  create(config?: AxiosRequestConfig): AxiosInstance
+
+  CancelToken: CancelTokenStatic
+  Cancel: CancelStatic
+  isCancel: (value: any) => boolean
 }
 
 // 拦截器管理
@@ -101,13 +112,6 @@ export interface RejectedFn {
   (error: any): any
 }
 
-export interface CancelToken {
-  promise: Promise<string>
-  reason?: Cancel
-
-  throwIfRequested(): void
-}
-
 export interface Canceler {
   (reason?: string): void
 }
@@ -121,6 +125,15 @@ export interface CancelTokenSource {
   cancel: Canceler
 }
 
+// CancelToken 实例类型
+export interface CancelToken {
+  promise: Promise<string>
+  reason?: Cancel
+
+  throwIfRequested(): void
+}
+
+// CancelToken 静态类型
 export interface CancelTokenStatic {
   new (executor: CancelExecutor): CancelToken
 
@@ -133,12 +146,4 @@ export interface Cancel {
 
 export interface CancelStatic {
   new (message?: string): Cancel
-}
-
-export interface AxiosStatic extends AxiosInstance {
-  create(config?: AxiosRequestConfig): AxiosInstance
-
-  CancelToken: CancelTokenStatic
-  Cancel: CancelStatic
-  isCancel: (value: any) => boolean
 }

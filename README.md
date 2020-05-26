@@ -35,3 +35,56 @@ npm install
 8. Conventional changelog 自动生成changelog
 
 ### npm script常用命令
+
+## 记录
+
+### 混合类型
+
+一个对象可以同时做为函数和对象使用，并带有额外的属性。
+
+```typescript
+interface Counter {
+  (start: number): string
+  interval: number
+  reset(): void
+}
+
+function getCounter(): Counter {
+  let counter = (function (start: number) { }) as Counter
+  counter.interval = 123
+  counter.reset = function () { }
+  return counter
+}
+
+let c = getCounter()
+c(10)
+c.reset()
+c.interval = 5.0
+```
+
+在 axios 例子为
+
+```typescript
+export interface Axios {
+  // Axios 实例属性方法等
+  request<T = any>(config: AxiosRequestConfig): AxiosPromise<T>
+}
+
+export interface AxiosInstance extends Axios {
+  // 作为函数的签名
+  <T = any>(config: AxiosRequestConfig): AxiosPromise<T>
+
+  // 函数重载
+  <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+}
+```
+
+使用时，可以如此
+
+```typescript
+// 做函数使用
+axios(config)
+
+// 作为类实例使用
+axios.get(config)
+```
