@@ -100,6 +100,13 @@ router.post('/config/post', function(req, res) {
 })
 app.use(router)
 
+// withCredentials
+router.get('/more/get', function(req, res) {
+  res.json({
+    data: 'lky',
+  })
+})
+
 const port = process.env.PORT || 8080
 
 module.exports = app.listen(port, () => {

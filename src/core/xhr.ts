@@ -11,13 +11,18 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       headers,
       responseType,
       timeout,
-      cancelToken
+      cancelToken,
+      withCredentials
     } = config
 
     const request = new XMLHttpRequest()
 
     if (responseType) {
       request.responseType = responseType
+    }
+
+    if (withCredentials) {
+      request.withCredentials = withCredentials
     }
 
     request.open(method.toUpperCase(), url, true)
@@ -63,7 +68,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       }
     }
     // 错误处理
-    request.onerror = function handleError() {
+    request.onerror = function handleError(e) {
+      console.log('e', e)
       reject(createError('Network Error', config, null, request))
     }
 
