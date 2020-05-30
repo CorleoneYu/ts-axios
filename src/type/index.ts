@@ -12,6 +12,9 @@ export interface AxiosRequestConfig {
   cancelToken?: CancelToken // 取消请求
   withCredentials?: boolean // 跨域是否发送 cookie
 
+  xsrfCookieName?: string
+  xsrfHeaderName?: string
+
   [propName: string]: any
 }
 

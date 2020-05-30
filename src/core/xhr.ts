@@ -1,6 +1,8 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from '../type'
 import { parseHeaders } from '../helpers/header'
 import { createError } from '../helpers/error'
+import { isURLSameOrigin } from '../helpers/url'
+import cookie from '../helpers/cookie'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -12,7 +14,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       responseType,
       timeout,
       cancelToken,
-      withCredentials
+      withCredentials,
+      xsrfCookieName,
+      xsrfHeaderName
     } = config
 
     const request = new XMLHttpRequest()
@@ -23,6 +27,23 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     if (withCredentials) {
       request.withCredentials = withCredentials
+    }
+
+    /**
+     * xsrf 防御
+     * 服务器生成 token 并种在 cookie 中带到客户端
+     * 客户端发送请求时：
+     * 1. 从 cookie 中读取该 token 值
+     * 2. 写入 headers 中
+     * 服务端接收请求时：
+     * 1. 从 headers 中读取该 token 值
+     * 2. 验证 token
+     */
+    if (xsrfCookieName && (withCredentials || isURLSameOrigin(url!))) {
+      const xsrfValue = cookie.read(xsrfCookieName)
+      if (xsrfValue) {
+        headers[xsrfHeaderName!] = xsrfValue
+      }
     }
 
     request.open(method.toUpperCase(), url, true)

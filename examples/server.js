@@ -23,7 +23,11 @@ app.use(
 app.use(webpackHotMiddleware(compiler))
 
 // 静态资源服务
-app.use(express.static(__dirname))
+app.use(express.static(__dirname, {
+  setHeaders (res) {
+    res.cookie('XSRF-TOKEN-D', '1234abc')
+  }
+}))
 
 // json 解析
 app.use(bodyParser.json())
@@ -98,7 +102,6 @@ router.post('/config/post', function(req, res) {
     data: 'lky'
   })
 })
-app.use(router)
 
 // withCredentials
 router.get('/more/get', function(req, res) {
@@ -106,6 +109,8 @@ router.get('/more/get', function(req, res) {
     data: 'lky',
   })
 })
+
+app.use(router)
 
 const port = process.env.PORT || 8080
 
