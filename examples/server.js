@@ -4,6 +4,8 @@ const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const WebpackConfig = require('./webpack.config')
+const multipart = require('connect-multiparty')
+const path = require('path')
 
 const app = express()
 const compiler = webpack(WebpackConfig)
@@ -108,6 +110,16 @@ router.get('/more/get', function(req, res) {
   res.json({
     data: 'lky',
   })
+})
+
+// 上传文件
+app.use(multipart({
+  uploadDir: path.resolve(__dirname, 'upload-file')
+}))
+
+router.post('/more/upload', function(req, res) {
+  console.log(req.body, req.files)
+  res.end('upload success!')
 })
 
 app.use(router)

@@ -12,8 +12,13 @@ export interface AxiosRequestConfig {
   cancelToken?: CancelToken // 取消请求
   withCredentials?: boolean // 跨域是否发送 cookie
 
+  // xsrf-token
   xsrfCookieName?: string
   xsrfHeaderName?: string
+
+  // 上传/下载进度监控
+  onDownloadProgress?: (e: ProgressEvent) => void
+  onUploadProgress?: (e: ProgressEvent) => void
 
   [propName: string]: any
 }
