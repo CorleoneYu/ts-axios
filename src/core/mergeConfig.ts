@@ -20,7 +20,7 @@ strateKeysFromVal2.forEach(key => {
 })
 
 // 复杂对象合并策略
-const strateKeysDeepMerge = ['headers']
+const strateKeysDeepMerge = ['headers', 'auth']
 function deepMergeStrate(val1: any, val2: any): any {
   if (isPlainObject(val2)) {
     return deepMerge(val1, val2)

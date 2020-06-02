@@ -6,6 +6,7 @@ const webpackHotMiddleware = require('webpack-hot-middleware')
 const WebpackConfig = require('./webpack.config')
 const multipart = require('connect-multiparty')
 const path = require('path')
+const atob = require('atob')
 
 const app = express()
 const compiler = webpack(WebpackConfig)
@@ -25,11 +26,13 @@ app.use(
 app.use(webpackHotMiddleware(compiler))
 
 // 静态资源服务
-app.use(express.static(__dirname, {
-  setHeaders (res) {
-    res.cookie('XSRF-TOKEN-D', '1234abc')
-  }
-}))
+app.use(
+  express.static(__dirname, {
+    setHeaders(res) {
+      res.cookie('XSRF-TOKEN-D', '1234abc')
+    }
+  })
+)
 
 // json 解析
 app.use(bodyParser.json())
@@ -52,7 +55,7 @@ router.post('/base/post', function(req, res) {
 
 router.post('/base/buffer', function(req, res) {
   let msg = []
-  req.on('data', (chunk) => {
+  req.on('data', chunk => {
     if (chunk) {
       msg.push(chunk)
     }
@@ -80,7 +83,7 @@ router.get('/error/timeout', function(req, res) {
     res.json({
       msg: 'hello world'
     })
-  }, 3000);
+  }, 3000)
 })
 
 // 泛型
@@ -94,7 +97,7 @@ router.get('/extends/user', function(req, res) {
 // 拦截器
 router.get('/interceptor/get', function(req, res) {
   res.json({
-    data: 'lky',
+    data: 'lky'
   })
 })
 
@@ -108,18 +111,34 @@ router.post('/config/post', function(req, res) {
 // withCredentials
 router.get('/more/get', function(req, res) {
   res.json({
-    data: 'lky',
+    data: 'lky'
   })
 })
 
 // 上传文件
-app.use(multipart({
-  uploadDir: path.resolve(__dirname, 'upload-file')
-}))
+app.use(
+  multipart({
+    uploadDir: path.resolve(__dirname, 'upload-file')
+  })
+)
 
 router.post('/more/upload', function(req, res) {
   console.log(req.body, req.files)
   res.end('upload success!')
+})
+
+// http auth
+router.post('/more/post', function(req, res) {
+  const auth = req.headers.authorization
+  console.log('auth: ', auth);
+  const [type, credentials] = auth.split(' ')
+  console.log(atob(credentials))
+  const [username, password] = atob(credentials).split(':')
+  if (type === 'Basic' && username === 'lky' && password === '123456') {
+    res.json(req.body)
+  } else {
+    res.end('UnAuthorization')
+  }
 })
 
 app.use(router)
