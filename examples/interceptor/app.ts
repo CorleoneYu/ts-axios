@@ -1,6 +1,7 @@
 import axios from '../../src/index'
 
 axios.interceptors.request.use(config => {
+  console.log('请求拦截器');
   config.headers.test += '1'
   return config
 })
@@ -16,6 +17,7 @@ axios.interceptors.request.use(config => {
 })
 
 axios.interceptors.response.use(res => {
+  console.log('响应拦截器');
   res.data += '1'
   return res
 })

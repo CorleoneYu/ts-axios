@@ -7,8 +7,12 @@ export interface AxiosRequestConfig {
   headers?: any
   responseType?: XMLHttpRequestResponseType
   timeout?: number // 超时限制
+
+  // 请求、响应配置化
+  // 请求拦截器 -> 请求配置函数 -> 响应配置函数 -> 响应拦截器
   transformRequest?: AxiosTransformer | AxiosTransformer[]
   transformResponse?: AxiosTransformer | AxiosTransformer[]
+
   cancelToken?: CancelToken // 取消请求
   withCredentials?: boolean // 跨域是否发送 cookie
 
@@ -22,6 +26,10 @@ export interface AxiosRequestConfig {
 
   // http 授权
   auth?: AxiosBasicCredentials
+
+  // 自定义合法状态码
+  validateStatus?: (status: number) => boolean
+
   [propName: string]: any
 }
 
