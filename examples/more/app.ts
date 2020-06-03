@@ -1,6 +1,8 @@
 import axios, { AxiosError } from '../../src'
 import NProgress from 'nprogress'
+import qs from 'qs'
 
+// 上传、下载监控
 const instance = axios.create()
 
 function calculatePercentage(loaded: number, total: number) {
@@ -25,13 +27,16 @@ function loadProgressBar() {
   }
 
   const setupStopProgress = () => {
-    instance.interceptors.response.use(response => {
-      NProgress.done()
-      return response
-    }, error => {
-      NProgress.done()
-      return Promise.reject(error)
-    })
+    instance.interceptors.response.use(
+      response => {
+        NProgress.done()
+        return response
+      },
+      error => {
+        NProgress.done()
+        return Promise.reject(error)
+      }
+    )
   }
 
   setupStartProgress()
@@ -59,30 +64,86 @@ uploadEl!.addEventListener('click', e => {
   }
 })
 
-axios.post('/more/post', {
-  a: 1
-}, {
-  auth: {
-    password: '123456',
-    username: 'lky'
-  }
-}).then(res => {
-  console.log(res);
+// http 授权
+axios
+  .post(
+    '/more/post',
+    {
+      a: 1
+    },
+    {
+      auth: {
+        password: '123456',
+        username: 'lky'
+      }
+    }
+  )
+  .then(res => {
+    console.log(res)
+  })
+
+// 自定义合法状态码
+axios
+  .get('/more/304')
+  .then(res => {
+    console.log(res)
+  })
+  .catch((e: AxiosError) => {
+    console.log(e.message)
+  })
+
+axios
+  .get('/more/304', {
+    validateStatus(status) {
+      return status >= 200 && status < 400
+    }
+  })
+  .then(res => console.log(res))
+  .catch((e: AxiosError) => {
+    console.log(e.message)
+  })
+
+// 自定义参数序列化
+axios
+  .get('/more/get', {
+    params: new URLSearchParams('a=b&c=d')
+  })
+  .then(res => {
+    console.log(res)
+  })
+
+axios
+  .get('/more/get', {
+    params: {
+      a: 1,
+      b: 2,
+      c: ['a', 'b', 'c']
+    }
+  })
+  .then(res => {
+    console.log(res)
+  })
+
+axios
+  .get('/more/get', {
+    params: {
+      a: 1,
+      b: 2,
+      c: ['a', 'b', 'c']
+    },
+    paramsSerializer(params) {
+      return qs.stringify(params, { arrayFormat: 'brackets' })
+    }
+  })
+  .then(res => {
+    console.log(res)
+  })
+
+// baseURL
+const baseURLInstance = axios.create({
+  baseURL: 'https://img.mukewang.com/'
 })
 
+baseURLInstance.get('5cc01a7b0001a33718720632.jpg')
 
-axios.get('/more/304').then(res => {
-  console.log(res)
-}).catch((e: AxiosError) => {
-  console.log(e.message)
-})
-
-axios.get('/more/304', {
-  validateStatus(status) {
-    return status >= 200 && status < 400
-  }
-}).then(res => {
-  console.log(res)
-}).catch((e: AxiosError) => {
-  console.log(e.message)
-})
+baseURLInstance.get('https://img.mukewang.com/szimg/5becd5ad0001b89306000338-360-202.jpg')
