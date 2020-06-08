@@ -124,6 +124,7 @@ function resolveURL(url: string): URLOrigin {
 
 /**
  * 判断是否是绝对请求 url
+ * 标准是存在： (字母:)[可选]//
  * 例如：
  * https:baidu.com 是绝对路径
  * /user/get 不是绝对路径
