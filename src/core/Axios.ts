@@ -5,19 +5,19 @@ import {
   AxiosResponse,
   ResolvedFn,
   RejectedFn
-} from '../type'
-import dispatchRequest from './dispatchRequest'
-import InterceptorManager from './InterceptorManager'
-import mergeConfig from './mergeConfig'
+} from '../type';
+import dispatchRequest from './dispatchRequest';
+import InterceptorManager from './InterceptorManager';
+import mergeConfig from './mergeConfig';
 
 interface Interceptors {
-  request: InterceptorManager<AxiosRequestConfig>
-  response: InterceptorManager<AxiosResponse>
+  request: InterceptorManager<AxiosRequestConfig>;
+  response: InterceptorManager<AxiosResponse>;
 }
 
 interface PromiseChain {
-  resolved: ResolvedFn | ((config: AxiosRequestConfig) => AxiosPromise)
-  rejected?: RejectedFn
+  resolved: ResolvedFn | ((config: AxiosRequestConfig) => AxiosPromise);
+  rejected?: RejectedFn;
 }
 
 export default class Axios {
@@ -25,12 +25,12 @@ export default class Axios {
   interceptors: Interceptors = {
     request: new InterceptorManager<AxiosRequestConfig>(),
     response: new InterceptorManager<AxiosResponse>()
-  }
+  };
   // 默认配置
-  defaults: AxiosRequestConfig
+  defaults: AxiosRequestConfig;
 
   constructor(initConfig: AxiosRequestConfig) {
-    this.defaults = initConfig
+    this.defaults = initConfig;
   }
 
   // get, delete, head, options 不需要带数据在 data 里
@@ -40,7 +40,7 @@ export default class Axios {
         method,
         url
       })
-    )
+    );
   }
 
   // post put patch 在 data 携带数据
@@ -56,7 +56,7 @@ export default class Axios {
         url,
         data
       })
-    )
+    );
   }
 
   /**
@@ -79,68 +79,69 @@ export default class Axios {
   request(url: any, config?: any): AxiosPromise {
     if (typeof url === 'string') {
       if (!config) {
-        config = {}
+        config = {};
       }
-      config.url = url
+      config.url = url;
     } else {
-      config = url
+      config = url;
     }
 
-    config = mergeConfig(this.defaults, config)
+    config = mergeConfig(this.defaults, config);
+    config.method = config.method.toLowerCase();
 
     // 处理函数链
-    const chain: PromiseChain[] = []
+    const chain: PromiseChain[] = [];
     // 中间节点为 dispatchRequest
     chain.push({
       resolved: dispatchRequest
-    })
+    });
 
     // dispatchRequest 前为 request 拦截器
     this.interceptors.request.forEach(interceptor => {
-      chain.unshift(interceptor)
-    })
+      chain.unshift(interceptor);
+    });
 
     // dispatchRequest 后为 response 拦截器
     this.interceptors.response.forEach(interceptor => {
-      chain.push(interceptor)
-    })
+      chain.push(interceptor);
+    });
 
-    let promise = Promise.resolve(config)
+    let promise = Promise.resolve(config);
 
     // 消费函数链
     while (chain.length) {
-      const { resolved, rejected } = chain.shift()!
-      promise = promise.then(resolved, rejected)
+      const { resolved, rejected } = chain.shift()!;
+      promise = promise.then(resolved, rejected);
     }
 
-    return promise
+    return promise;
   }
 
   get(url: string, config?: AxiosRequestConfig): AxiosPromise {
-    return this.requestMethodWithoutData('get', url, config)
+    return this.requestMethodWithoutData('get', url, config);
   }
 
   delete(url: string, config?: AxiosRequestConfig): AxiosPromise {
-    return this.requestMethodWithoutData('delete', url, config)
+    return this.requestMethodWithoutData('delete', url, config);
   }
 
   head(url: string, config?: AxiosRequestConfig): AxiosPromise {
-    return this.requestMethodWithoutData('head', url, config)
+    return this.requestMethodWithoutData('head', url, config);
   }
 
   options(url: string, config?: AxiosRequestConfig): AxiosPromise {
-    return this.requestMethodWithoutData('options', url, config)
+    return this.requestMethodWithoutData('options', url, config);
   }
 
   post(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise {
-    return this.requestMethodWithData('post', url, data, config)
+    return this.requestMethodWithData('post', url, data, config);
   }
 
   put(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise {
-    return this.requestMethodWithData('put', url, data, config)
+    return this.requestMethodWithData('put', url, data, config);
   }
 
   patch(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise {
-    return this.requestMethodWithData('patch', url, data, config)
+    return this.requestMethodWithData('patch', url, data, config);
   }
 }

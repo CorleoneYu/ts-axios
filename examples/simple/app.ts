@@ -1,4 +1,7 @@
 import axios from '../../src/index'
+// import './test'
+// import './gen-es5'
+import './gen-my'
 
 axios({
   method: 'get',
